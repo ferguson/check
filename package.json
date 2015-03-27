@@ -21,7 +21,6 @@
     "gulp-coffeelint": "^0.4.0",
     "gulp-concat": "^2.5.2",
     "gulp-csslint": "^0.1.5",
-    "gulp-filter": "^2.0.2",
     "gulp-jshint": "^1.9.4",
     "gulp-jsx": "^0.9.0",
     "gulp-minify-css": "^1.0.0",
@@ -38,6 +37,8 @@
     "react-tools": "^0.13.1",
     "sass": "^0.5.0",
     "superagent": "^1.1.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
     "watchify": "^2.4.0"
   }
 }

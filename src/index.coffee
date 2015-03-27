@@ -18,39 +18,10 @@
 # And remember kids, CoffeeScript is just JavaScript!
 # http://coffeescript.org/
 
-Board = require './Board'
-Piece = require './Piece'
-
-nextTick = nextTick || (f) -> setTimeout(f, 0)
-
-# @cjsx React.DOM
-
 React = require 'react'
 
-MainPage = React.createClass
-  render: ->
-    `<div className="MainPage">
-      <h1>Hello, anonymous!</h1>
-      <p><a href="/users/doe">Login</a></p>
-    </div>`
-
-
-UserPage = React.createClass
-
-  statics:
-    getUserInfo: (username, cb) ->
-      superagent.get "http://localhost:3000/api/users/" + username, (err, res) ->
-        cb err, (if res then res.body else null)
-
-  render: ->
-    otherUser = ( if @props.username is 'doe' then 'ivan' else 'doe' )
-    `<div className="UserPage">
-      <h1>Hello, {this.state.name}!</h1>
-      <p>
-        Go to <a href={"/users/" + otherUser}>/users/{otherUser}</a>
-      </p>
-      <p><a href="/">Logout</a></p>
-    </div>`
+Board = require './Board'
+Piece = require './Piece'
 
 
 BoardSurface = React.createClass
@@ -78,7 +49,7 @@ Game = React.createClass
     piece: this.props.piece
     moves: 0
 
-  mixIt: ->
+  randomizeIt: ->
     this.setState
       size: this.state.size
       board: this.state.board.randomize()
@@ -111,13 +82,15 @@ Game = React.createClass
 
 
   render: ->
-    `<div>
-      <button onClick={this.mixIt}>mix it</button>
-      <input type="number" className="size" min="1" max="99"
-        onChange={this.changeIt} value={this.state.sizeInput}>
-      </input>
-      <button onClick={this.moveNext}>next</button>
-      <BoardSurface board={this.state.board} piece={this.props.piece} />
+    `<div className="game-container">
+      <div className="game">
+        <button onClick={this.randomizeIt}>randomize</button>
+        <input type="number" className="size" min="1" max="99"
+          onChange={this.changeIt} value={this.state.sizeInput}>
+        </input>
+        <button onClick={this.moveNext}>next</button>
+        <BoardSurface board={this.state.board} piece={this.props.piece} />
+      </div>
     </div>`
 
     # <button onClick={this.reduceIt} disabled={this.state.size < 2}>-</button>
@@ -129,4 +102,4 @@ if window?
     board = new Board( Math.pow(size, 2) ).randomize()
     piece = new Piece(board)
     piece.placeOnBoard(4, 4)
-    React.render `<Game size={size} board={board} piece={piece}/>`, document.body
+    React.render `<Game size={size} board={board} piece={piece} />`, document.body

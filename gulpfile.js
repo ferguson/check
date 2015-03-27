@@ -5,8 +5,6 @@ var coffeelint = require('gulp-coffeelint');
 var csslint = require('gulp-csslint');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
-var filter = require('gulp-filter');
-var print = require('gulp-print');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
 var rename = require('gulp-rename');
@@ -19,11 +17,13 @@ var del = require('del');
 var prompt = require('prompt');
 var watchify = require('watchify');
 var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 
 // default - build all the things
 gulp.task('default', ['coffee', 'sass', 'css', 'lint', 'bundle', 'minify'], function() {
-    console.log('==========');  // visually demarks successful builds when using 'watch'
+    console.log('==========');  // visually demarks builds when using 'watch'
 });
 
 
@@ -43,7 +43,7 @@ gulp.task('bundle', ['bundlejs', 'bundlecss']);
 
 
 // bundlejs - Browserify everything into one bundle.js file in bundle/
-gulp.task('bundlejs', ['coffee', 'lint', 'sass'], bundle);
+gulp.task('bundlejs', ['coffee'], bundle);
 
 var bundler = browserify('./js/index.js', {});
 //var bundler = watchify(browserify('./js/index.js', watchify.args));  // this didn't seem to be helping any
@@ -53,20 +53,19 @@ bundler.on('log', gutil.log);  // output build logs to terminal
 
 function bundle() {
     return bundler.bundle()
-        .on('error', gutil.log.bind(gutil, 'Browserify Error'))  // log errors if they happen
+        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('bundle.js'))
-        // optional, remove if you dont want sourcemaps
-          .pipe(buffer())
-          .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-          .pipe(sourcemaps.write('./')) // writes .map file
-        //
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
+        .pipe(sourcemaps.write('./')) // writes .map file
         .pipe(gulp.dest('./bundle'));
 }
+
 
 // bundlecss - bundle .css files into one bundle.css in bundle/
 //   warning: will be in filename sorted order
 //   00name.css 01name.css filenames might be useful here
-gulp.task('bundlecss', function() {
+gulp.task('bundlecss', ['sass', 'lintcss'], function() {
   return gulp.src('css/*.css')
     .pipe(concat('bundle.css'))
     .pipe(gulp.dest('bundle'));
@@ -79,7 +78,7 @@ gulp.task('minify', ['minifyjs', 'minifycss']);
 
 
 // minifyjs - make a minified version of bundle.js
-gulp.task('minifyjs', ['bundle'], function() {
+gulp.task('minifyjs', ['bundlejs'], function() {
     return gulp.src('bundle/bundle.js')
         .pipe(rename('bundle.min.js'))
         .pipe(uglify())
@@ -88,7 +87,7 @@ gulp.task('minifyjs', ['bundle'], function() {
 
 
 // minifycss - make a minified version of bundle.css
-gulp.task('minifycss', function() {
+gulp.task('minifycss', ['bundlecss'], function() {
   return gulp.src('bundle/bundle.css')
     .pipe(minifycss( {keepBreaks:false} ))  // keepBreaks:true might be useful
     .pipe(rename('bundle.min.css'))
@@ -124,7 +123,7 @@ gulp.task('lintcoffee', function() {
 
 
 // lintjs - lint the generated js using jshint
-//   less useful than usual since coffeescript prevents so many lintable things
+//   less useful than normal since coffeescript prevents so many lintable things
 //   (and generates a few of it's own) but still catches some stuff
 gulp.task('lintjs', ['coffee'], function() {
     return gulp.src('js/*.js')
@@ -149,13 +148,9 @@ gulp.task('lintgulpfile', function() {
 });
 
 
-// lintcss - lint the generated css
+// lintcss - lint all the css files, generated and otherwise
 gulp.task('lintcss', function() {
-    //filter_ouroborous = ;
-    gulp.src('css/*.css')
-        .pipe(print())
-        .pipe(filter(['*', '!css/ouroboros.css']))  // not yet ready to be linted  // also not working FIXME
-        .pipe(print())
+    gulp.src(['css/*.css', '!css/ouroboros.css'])  // ouroboros not ready to be linted
         .pipe(csslint())
         .pipe(csslint.reporter());
 });
@@ -164,7 +159,7 @@ gulp.task('lintcss', function() {
 // clean - remove unwanted cruft
 //   warning: removes the js and css directories!
 //   don't put source files there! put them in /src
-//   (and if needed, add gulp rules for copying them into js/ and css/)
+//   (and, if needed, add gulp rules for copying them into js/ and css/)
 gulp.task('clean', function (cb) {
     prompt.start();
     areYouSure(cb, function() {
