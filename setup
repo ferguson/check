@@ -1,0 +1,59 @@
+#!/bin/bash
+
+NODEVERSION="v0.10"
+PROJECT="`basename \`pwd\``"
+
+if [ "$UID" == "0" ]; then
+  echo "please don't run this as root"
+  exit
+fi
+
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if ! which git >/dev/null; then
+  echo "'git' not found, aborting."
+  exit
+fi
+
+echo -n "press return to setup in $ROOT (or press ctrl-c to cancel): "
+read shunt
+
+cd $ROOT
+
+echo "installing 'n'..."
+mkdir -p bin
+mkdir -p tmp
+git clone -q https://github.com/tj/n.git tmp/n || exit
+(cd tmp/n; PREFIX="$ROOT" make install >/dev/null || exit) || exit
+
+cd $ROOT
+echo "creating activate script..."
+cat <<EOF >activate
+PATH=$ROOT/bin:$ROOT/node_modules/.bin:\$PATH
+export N_PREFIX=$ROOT
+PS1="($PROJECT)\$PS1"
+EOF
+
+echo ""
+echo "using 'n' to install node $NODEVERSION..."
+. activate
+n $NODEVERSION >/dev/null || (echo "failed while installing node"; exit 1) || exit
+echo -n "node "
+node -v
+
+echo ""
+echo "installing node modules..."
+npm install
+
+echo ""
+echo "building project..."
+gulp default
+
+echo ""
+echo "done."
+echo ""
+echo "type '. activate' to use this project."
+echo "then type 'gulp webserver' to launch in browser." 
+echo
+
+exit

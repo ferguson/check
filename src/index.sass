@@ -1,0 +1,61 @@
+$font-stack: Verdana, Helvetica, Arial, sans-serif
+$jibo-blue: #00d8ff
+$jibo-bluebutton: #008cba
+$jibo-blueborder: #007095
+$jibo-redbutton: #f04124
+$jibo-redborder: #cf2a0e
+$jibo-gray: #45494b
+$jibo-lightgray: #7d8081
+$fgcolor: #6C6C6C 
+$bgcolor: #333
+$margin: 16px
+
+html, body
+  height: 100%
+
+body, td
+  font: 100% $font-stack
+  color: $jibo-lightgray
+  background-color: $jibo-gray
+  // improve handling of kerning pairs and ligatures in modern browsers
+  // see http://aestheticallyloyal.com/public/optimize-legibility/
+  text-rendering: optimizeLegibility;
+
+.here
+  color: white
+  background-color: black
+
+.goU:before
+  content: '↑'
+.goD:before
+  content: '↓'
+.goL:before
+  content: '←'
+.goR:before
+  content: '→'
+
+
+
+body.preload
+  opacity: 0.2
+
+.startup-container 
+  position: absolute
+  top: 40%
+  bottom: 0
+  left: 0
+  right: 0
+  width: 100%
+  margin-left: 50%
+  height: 100%
+
+.startup
+  width: 103px
+
+.startup .ouroboros
+  display: inline-block
+  width: 103px
+  margin-left: -50%
+  padding: 0
+
+
