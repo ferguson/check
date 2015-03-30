@@ -33,8 +33,8 @@ BoardLogic = class
 
 
   isValidPos: (row, col) ->
-    return false unless row > 0 and row < @rows
-    return false unless col > 0 and col < @cols
+    return false unless row > 0 and row <= @rows
+    return false unless col > 0 and col <= @cols
     return true
 
 

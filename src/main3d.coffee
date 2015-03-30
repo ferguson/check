@@ -112,8 +112,7 @@ Square = React.createClass
 
     return ->
       # this is the function that is called for each object's state on object creation
-      state = {}
-      _.assign state, singleton  # copy in the static values from the singleton
+      state = _.clone singleton  # copy in the static values from the singleton
       # add any additional per object values to state here
       return state
 
@@ -172,8 +171,7 @@ Arrow = React.createClass
 
     return ->
       # this is the function that is called for each object's state on object creation
-      state = {}
-      _.assign state, singleton  # copy in the static values from the singleton
+      state = _.clone singleton  # copy in the static values from the singleton
       # add any additional per object values to state here
       return state
 
@@ -218,11 +216,15 @@ Piece = React.createClass
       color: getColorFromCSS '.Piece'
       transparent: true
       opacity: 0.85
+    # from http://stackoverflow.com/questions/25231965/
+    for face in singleton.geometry.faces
+      if face.normal.y is 0
+        face.color.setHex getColorFromCSS '.PieceSide'
+    singleton.color.vertexColors = THREE.FaceColors
 
     return ->
       # this is the function that is called for each object's state on object creation
-      state = {}
-      _.assign state, singleton  # copy in the static values from the singleton
+      state = _.clone singleton  # copy in the static values from the singleton
       # add any additional per object values to state here
       return state
 
@@ -261,15 +263,20 @@ Board = React.createClass
       position = new THREE.Vector3(x,100,y)
       objects.push `<Square key={key} position={position} dark={isDarkSquare} />`
 
+      position = new THREE.Vector3(x-0,125,y-0)
+      key = key += 'arrow'
+      direction = BoardLogic::toUDLR(square)
+      objects.push `<Arrow key={key} direction={direction} position={position} dark={!isDarkSquare} />`
+
       if row is piece_row and col is piece_col
         position = new THREE.Vector3(x-0,120,y-0)
         objects.push `<Piece key="piece" position={position} />`
 
+    if not @props.piece.stillOnBoard()
+      x = (piece_col-1) * 200 - (board.cols * 200 / 2)  # code smell: repeating, hard-coded
+      y = (piece_row-1) * 200 - (board.rows * 200 / 2)
       position = new THREE.Vector3(x-0,120,y-0)
-
-      key = key += 'arrow'
-      direction = BoardLogic::toUDLR(square)
-      objects.push `<Arrow key={key} direction={direction} position={position} dark={!isDarkSquare} />`
+      objects.push `<Piece key="piece" position={position} />`
 
     position = @props.position || new THREE.Vector3(0,0,0)
     `<Object3D quaternion={this.props.quaternion} position={position}>
@@ -286,9 +293,10 @@ Tabletop = React.createClass
     cameraProps =
       fov: 75
       aspect: aspectRatio
-      near: 1, far: 5000
-      position: new THREE.Vector3(0, 800, 10+(@props.board.rows*180) )
-      lookat: new THREE.Vector3(0,0,0)
+      near: 1, far: 20000
+      #position: new THREE.Vector3(0, 800, 10+(@props.board.rows*180) )
+      position: new THREE.Vector3(0, 1400, 10+(@props.board.rows*180) )
+      lookat: new THREE.Vector3(0,-200,0)
 
     background = getColorFromCSS '.Scene', 'background-color'
     `<Scene background={background} width={this.props.width} height={this.props.height} camera="maincamera">
@@ -307,12 +315,10 @@ Game = React.createClass
     board: @props.board
     piece: @props.piece
     moves: 0
-
-  randomizeIt: ->
-    console.log 'randomizeIt'
-    @newGame @state.size
+    autoMoveTimeout: null
 
   newGame: (size) ->
+    @clearTimer()
     gameData = newGame size
     @setState
       size: gameData.size
@@ -321,11 +327,20 @@ Game = React.createClass
       moves: @state.moves+1
       sizeInput: gameData.size
 
+  clearTimer: ->
+    if @state.autoMoveTimeout?
+      clearTimeout @state.autoMoveTimeout
+      @setState autoMoveTimeout: null
+
+  randomizeIt: ->
+    console.log 'randomizeIt'
+    @newGame @state.size
+
   changeSize: (e) ->
     console.log 'changeSize', e
     new_size = parseInt e.target.value
     @setState sizeInput: new_size
-    if new_size > 1 and new_size <= 30
+    if new_size > 1 and new_size <= 40
       console.log 'new_size', new_size
       @newGame new_size
 
@@ -337,22 +352,62 @@ Game = React.createClass
 
   moveNext: ->
     console.log 'moveNext'
-    @state.piece.executeMove()
-    @setState moves: @state.moves + 1
+    if @state.piece.stillOnBoard()
+      @refs.nextSound.getDOMNode().play()
+      @state.piece.executeMove()
+      @setState moves: @state.moves + 1
+
+  toggleAutoMove: ->
+    if not @state.autoMoveTimeout?
+      @autoMove()
+    else
+      @clearTimer()
+    return @
+
+  autoMove: ->
+    console.log 'autoMove:', @
+    if not @state.piece.stillOnBoard()  # pressing 'winner!' resets
+      @randomizeIt()
+    else
+      if @state.piece.checkForLoop()
+        # let's remove the loop from the history upon a second
+        # press of the button and allow then to loop again
+        @state.piece.checkForLoop(true)
+      timeout = null
+      if @state.piece.stillOnBoard()
+        @moveNext()
+        if @state.piece.stillOnBoard() and not @state.piece.checkForLoop()
+          timeout = timeoutSet 500, => @autoMove()
+      @setState autoMoveTimeout: timeout
+    return @
+
+  undoMove: ->
+    console.log 'undoMove'
+    @state.piece.undoMove()
 
   render: ->
+    playStopLabel = 'play'
+    if @state.autoMoveTimeout?
+      playStopLabel = 'stop'
+    else if not @state.piece.stillOnBoard()  # code smell: duplicate logic
+      playStopLabel = 'winner!'
+    else if @state.piece.checkForLoop()
+      playStopLabel = 'loop'
     `<div>
       <Tabletop {...this.props.sceneProps} board={this.state.board} piece={this.state.piece}
           boardQuaternion={this.props.boardQuaternion} />
-      <div className="controlbar">
+      <div className="controlbar noselect">
         <div className="controls">
-          <button onClick={this.randomizeIt}><span>randomize</span></button>
-          <input type="number" className="size" min="1" max="30"
+          <button onClick={this.randomizeIt}><span>reset</span></button>
+          <button onClick={this.toggleAutoMove}><span>{playStopLabel}</span></button>
+          <input type="number" className="size" min="1" max="40"
             onChange={this.changeSize} value={this.state.sizeInput}>
           </input>
-          <button onClick={this.moveNext}><span>move</span></button>
+          <button onClick={this.undoMove} disabled={this.state.piece.history.length<2}><span>undo</span></button>
+          <button onClick={this.moveNext} disabled={!this.state.piece.stillOnBoard()}><span>move</span></button>
         </div>
       </div>
+      <audio ref='nextSound' src='static/sounds/First_Contact.wav' type='audio/wav' preload />
     </div>`
 
 

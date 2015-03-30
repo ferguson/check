@@ -3,7 +3,7 @@
 BoardLogic = require './BoardLogic'
 PieceLogic = require './PieceLogic'
 
-board = new BoardLogic(64)
+board = new BoardLogic(8)
 
 while true
   piece = new PieceLogic(board)

@@ -1,3 +1,38 @@
+v darken sides of checker
+v bug with two edges of board
+v show checker once it falls off board
+v "stop/run" mode
+v undo bug
+v disable/enable buttons when appropriate
+v rethink button verbs
+icons would be even better
+v allow play to 'reloop'
+v style disabled buttons
+x show number of moves
+v show when looping
+x tell last valid move? or show on square?
+window resizing doesn't work
+add some sweet, sweet sound effects
+compress the audio files
+animations would be nice
+v increase camera angle at higher board sizes (or decrease it less actually)
+v loading indicator colors clash with the rest of the design
+v center of ouroboros needs to match background
+not using bundle.min.{js,css} yet (does it work? esp. worried about css)
+why is board at a slightly odd angle? i like it and will keep it, just wondering why
+v button borders are a tad too bright
+v make background of text input match the light squares
+v shadow needs to be tweaked a few pixels to the right
+v move board up a smidge?
+v disable select in sass file
+x things are a little funky with the 'move' button and looping and play/loop and undo
+
+it would be nice if you could place the checker
+too much logic and state in <Game />, an event driven model could fix this
+stylesheet is a bleedin' mess, not really using the power of sass yet
+not mobile first
+
+
 livereload has a issue with reloading the current build, it lags one behind
   - probably related to the extra coffescript & jsx compile cycles
   - the 'watch' mechanism is a bit crude (it's part of the web server, it
@@ -11,7 +46,6 @@ better error capturing in gulpfile so gulp watch doesn't exit
 add 'watch' back as a dep for 'webserver' (or at least 'default'?)
 watchify keeps bundlejs from completing (maybe this is expected)
 make sure dependant gulpfile actions report back compleation correctly
-not using bundle.min.js yet
 missing favicon, icon, and iphone splash screen images
 i think the bundle gulp tasks might be missing some dependencies
 sourcemaps for css bundle and css minify?

@@ -157,7 +157,7 @@ gulp.task('lintgulpfile', function() {
 // lintcss - lint all the css files, generated and otherwise
 gulp.task('lintcss', function() {
     gulp.src(['css/*.css', '!css/ouroboros.css'])  // ouroboros not ready to be linted
-        .pipe(csslint({"box-model": false, "box-sizing": false}))
+        .pipe(csslint({"box-model": false, "box-sizing": false, "adjoining-classes": false}))
         .pipe(csslint.reporter());
 });
 

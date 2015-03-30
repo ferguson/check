@@ -36,8 +36,9 @@ PieceLogic = class
 
 
   undoMove: ->
-    if @history.length
-      [@row, @col] = @history.pop()
+    if @history.length > 1
+      @history.pop()
+      [@row, @col] = @history[@history.length-1]
       return [@row, @col]
     else
       return undefined
@@ -47,9 +48,11 @@ PieceLogic = class
     return @board.isValidPos(@row, @col)
 
 
-  checkForLoop: ->
-    for [oldrow, oldcol] in @history[0..-2]
+  checkForLoop: (nullifyLoop=false) ->
+    for [oldrow, oldcol],n in @history[0..-2]
       if @row == oldrow and @col == oldcol
+        if nullifyLoop
+          @history = @history.slice(0, n+1)
         return true
     return false
 

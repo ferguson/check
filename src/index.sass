@@ -11,14 +11,14 @@ $margin: 16px
 
 html, body
   height: 100%
-  color: $jibo-lightgray
-  background-color: $jibo-gray
+  color: #FEDCBA
+  background-color: #694538
 
 body, td
   font: 100% $font-stack
   // improve handling of kerning pairs and ligatures in modern browsers
   // see http://aestheticallyloyal.com/public/optimize-legibility/
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility
   margin: 0
 
 .here
@@ -39,6 +39,14 @@ td
   border: solid 1px $jibo-bluebutton
   font-size: 48px
 
+.noselect
+    -webkit-touch-callout: none
+    -webkit-user-select: none
+    -khtml-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none
+
 .controlbar
   position: absolute
   bottom: 0
@@ -46,17 +54,18 @@ td
   width: 100%
   z-index: 100
   background-color: #5D4037
-  box-shadow: -2px -4px 10px #2D2017
+  box-shadow: -1px -4px 10px #2D2017
 
 .controls
-  width: 500px
+  width: 760px
   margin: 35px auto 0 auto
 
 .controls button
   width: 150px
   height: 50px
+  margin: 0 3px
   background-color: #123456
-  border: solid 2px $jibo-bluebutton
+  border: solid 2px #694538
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.16)
   -webkit-font-smoothing: antialiased
 
@@ -68,13 +77,23 @@ td
   position: relative
   top: -3px
 
+.controls button:disabled span
+  color: #5D4037
+
 .controls input
   display: inline-block
-  position: relative;
-  top: 6px
-  margin: 0 50px
-  font-size: 38px
+  position: relative
+  top: 3px
+  margin: 0 25px
+  font-size: 32px
   width: 2em
+  text-align: center
+  padding: 4px 9px
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+  line-height: 1 //huh? no units?
+  color: #FEDCBA
+  background-color: #123456
+  border: 2px solid #694538
 
 
 // these next items with initial caps are not used in the DOM
@@ -99,6 +118,8 @@ td
 .ArrowDarkSide
   color: #021446
 .Piece
+  color: $jibo-redbutton
+.PieceSide
   color: $jibo-redborder
 
 .tabletop canvas
@@ -125,6 +146,18 @@ td
   width: 103px
   margin-left: -50%
   padding: 0
+
+// fill color
+.ouroboros .ui-spinner.brown .side .fill
+  background: #3D2017
+
+// background
+.ouroboros .ui-spinner.brown
+  background: #694538
+
+// hole in the middle
+.ouroboros .ui-spinner.brown:after
+  background: #694538
 
 .game-container
   position: absolute
