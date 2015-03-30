@@ -9,17 +9,15 @@ and check sourcemaps through all the stages (coffeescript, jsx, browserfy, minif
 sourcemaps for sass
 better error capturing in gulpfile so gulp watch doesn't exit
 add 'watch' back as a dep for 'webserver' (or at least 'default'?)
-i'm not sure watchify was doing anything for us
+watchify keeps bundlejs from completing (maybe this is expected)
 make sure dependant gulpfile actions report back compleation correctly
 not using bundle.min.js yet
 missing favicon, icon, and iphone splash screen images
 i think the bundle gulp tasks might be missing some dependencies
 sourcemaps for css bundle and css minify?
 ouroboros.css is not ready to be linted (gulpfile.js configured to skip it specifically)
-except i can't seem to filter it, thus tons of css lint errors FIXME
 css file bundling has no control over ordering
 i wonder if the bad habit of using // to comment out things in css files breaks things when minifying (see ouroboros.css)
-2d version arrows are lost FIXME
 2d version layout is lame
 note: react-three seems to require react 0.12.2 and not react 0.13
 emacs .#* tmp files confuse stupid 'watch'
