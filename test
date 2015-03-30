@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. activate
+
+coffee src/test.BoardLogic.coffee || exit
+coffee src/test.PieceLogic.coffee || exit
+
+exit
+
+

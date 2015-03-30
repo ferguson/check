@@ -13,6 +13,7 @@ var webserver = require('gulp-webserver');
 var coffee = require('gulp-coffee');
 var jsx = require('gulp-react');
 var gutil = require('gulp-util'); 
+var debug = require('gulp-debug');
 var del = require('del');
 var prompt = require('prompt');
 var watchify = require('watchify');
@@ -22,9 +23,7 @@ var buffer = require('vinyl-buffer');
 
 
 // default - build all the things
-gulp.task('default', ['coffee', 'sass', 'css', 'lint', 'bundle', 'minify'], function() {
-    console.log('==========');  // visually demarks builds when using 'watch'
-});
+gulp.task('default', ['coffee', 'sass', 'copyjs', 'copycss', 'lint', 'bundle', 'minify']);
 
 
 // coffee - CoffeeScript + JSX conversion to .js files in js/
@@ -33,25 +32,16 @@ gulp.task('coffee', ['lintcoffee'], function() {
         //.pipe(sourcemaps.init())  // was breaking JSX transform?
         .pipe(coffee({ bare: true })).on('error', gutil.log)
         //.pipe(sourcemaps.write('maps'))
-        .pipe(jsx())
+        .pipe(jsx()).on('error', gutil.log)
         .pipe(gulp.dest('js'));
 });
 
 
-// bundle - bundle .js files into bundle.js and .css files into bundle.css
+// bundle - bundle .js and .css files into bundle.js and bundle.css
 gulp.task('bundle', ['bundlejs', 'bundlecss']);
 
 
-// bundlejs - Browserify everything into one bundle.js file in bundle/
-gulp.task('bundlejs', ['coffee'], bundle);
-
-var bundler = browserify('./js/index.js', {});
-//var bundler = watchify(browserify('./js/index.js', watchify.args));  // this didn't seem to be helping any
-bundler.transform('brfs');
-//bundler.on('update', bundle);  // on any dep update, runs the bundler  // for watchify
-bundler.on('log', gutil.log);  // output build logs to terminal
-
-function bundle() {
+var bundle = function() {
     return bundler.bundle()
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('bundle.js'))
@@ -59,7 +49,16 @@ function bundle() {
         .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
         .pipe(sourcemaps.write('./')) // writes .map file
         .pipe(gulp.dest('./bundle'));
-}
+};
+
+var bundler = browserify('./js/index.js', {});
+bundler.transform('brfs');
+//var bundler = watchify(browserify('./js/index.js', watchify.args));  // 
+//bundler.on('update', bundle);  // on any dep update, runs the bundler  // for watchify
+bundler.on('log', gutil.log);  // output build logs to terminal
+
+// bundlejs - Browserify everything into one bundle.js file in bundle/
+gulp.task('bundlejs', ['coffee'], bundle);
 
 
 // bundlecss - bundle .css files into one bundle.css in bundle/
@@ -103,10 +102,17 @@ gulp.task('sass', function() {
 });
 
 
-// css - copy .css files from src/ to css/
-gulp.task('css', function() {
+// copyjs - copy .js files from src/ to js/
+gulp.task('copyjs', function(cb) {
+    gulp.src('src/*.js')
+        .pipe(gulp.dest('./js'), cb);
+});
+
+
+// copycss - copy .css files from src/ to css/
+gulp.task('copycss', function(cb) {
     gulp.src('src/*.css')
-        .pipe(gulp.dest('./css'));
+        .pipe(gulp.dest('./css'), cb);
 });
 
 
@@ -179,13 +185,15 @@ gulp.task('distclean', function (cb) {
 });
 
 var do_clean = function(cb) {
-    del(['js', 'css', 'bundle', '*~', '*/*~', '.??*~', 'npm-debug.log'], cb);
+    del(['js', 'css', 'bundle', '*~', '*/*~', '.??*~', 'npm-debug.log']);
+    cb();
 };
 
 var do_distclean = function(cb) {
     do_clean(function() {
-        del(['activate', 'bin', 'include', 'lib', 'n', 'node_modules', 'share', 'tmp'], cb);
+        del(['activate', 'bin', 'include', 'lib', 'n', 'node_modules', 'share', 'tmp']);
     });
+    cb();
 };
 
 var areYouSure = function(no_cb, yes_cb) {
@@ -205,11 +213,18 @@ var areYouSure = function(no_cb, yes_cb) {
 
 // watch - build things when things change
 gulp.task('watch', function() {
-    //gulp.watch('src/*.coffee', ['coffee', 'lint', 'bundle', 'minify']);
-    gulp.watch('src/*', ['default']);
-    //gulp.watch('src/*.cjsx', ['cjsx', 'lint', 'bundle', 'minify']);
-    //gulp.watch('src/*.js', ['lint', 'copytojs?']);
-    //gulp.watch('src/*.sass', ['sass']);
+    //gulp.watch('src/*', ['default']);
+    gulp.watch('src/*.coffee', ['coffee', 'lintcoffee', 'lintjs', 'bundlejs']);
+    gulp.watch('src/*.js',     ['copyjs', 'lintjs', 'bundlejs']);
+    gulp.watch('src/*.sass',   ['sass', 'lintcss', 'bundlecss']);
+    gulp.watch('src/*.css',    ['copycss', 'lintcss', 'bundlecss']);
+});
+
+
+// debug - debugging broken file globbing
+gulp.task('debug', function() {
+    gulp.src(['src/*.coffee', '!src/.#*'])
+        .pipe(debug());
 });
 
 
@@ -217,15 +232,15 @@ gulp.task('watch', function() {
 gulp.task('webserver', [], function() {
     return gulp.src('./')
         .pipe(webserver({
-            //directoryListing: true,  // disabled to force it to serve index.html by default
+            directoryListing: false,  // disabled to force it to serve index.html by default
             livereload: {
-                //enable: true,  // enables livereload 
-                enable: false,  // it reloads the previous version which is not helpful
+                enable: true,  // enables livereload 
+                //enable: false,  // it reloads the previous version which is not helpful
                 filter: function(filename) {
                     // only reload on the files specific to the browser
                     //console.log(filename);
-                    if (filename.match(/\/css$|\/bundle$|\/static$|index.html$/)) {
-                        //console.log('watching', filename);
+                    if (filename.match(/\/bundle$|\/static$|index.html$/)) {
+                        console.log('live', filename);
                         return true;
                     } else {
                         return false;

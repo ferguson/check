@@ -19,4 +19,7 @@ ouroboros.css is not ready to be linted (gulpfile.js configured to skip it speci
 except i can't seem to filter it, thus tons of css lint errors FIXME
 css file bundling has no control over ordering
 i wonder if the bad habit of using // to comment out things in css files breaks things when minifying (see ouroboros.css)
-
+2d version arrows are lost FIXME
+2d version layout is lame
+note: react-three seems to require react 0.12.2 and not react 0.13
+emacs .#* tmp files confuse stupid 'watch'

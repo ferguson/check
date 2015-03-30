@@ -6,6 +6,7 @@ $jibo-redbutton: #f04124
 $jibo-redborder: #cf2a0e
 $jibo-gray: #45494b
 $jibo-lightgray: #7d8081
+$jibo-verylightgray: #f3f3f3
 $margin: 16px
 
 html, body
@@ -18,6 +19,7 @@ body, td
   // improve handling of kerning pairs and ligatures in modern browsers
   // see http://aestheticallyloyal.com/public/optimize-legibility/
   text-rendering: optimizeLegibility;
+  margin: 0
 
 .here
   color: white
@@ -33,8 +35,77 @@ body, td
   content: '→'
 
 td
-  background-color: $jibo-bluebutton
-  border: solid 1px $jibo-blueborder
+  background-color: $jibo-blueborder
+  border: solid 1px $jibo-bluebutton
+  font-size: 48px
+
+.controlbar
+  position: absolute
+  bottom: 0
+  height: 150px
+  width: 100%
+  z-index: 100
+  background-color: #5D4037
+  box-shadow: -2px -4px 10px #2D2017
+
+.controls
+  width: 500px
+  margin: 35px auto 0 auto
+
+.controls button
+  width: 150px
+  height: 50px
+  background-color: #123456
+  border: solid 2px $jibo-bluebutton
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.16)
+  -webkit-font-smoothing: antialiased
+
+.controls button span
+  color: #FEDCBA
+  font-size: 24px
+  font-weight: 700
+  display: inline-block
+  position: relative
+  top: -3px
+
+.controls input
+  display: inline-block
+  position: relative;
+  top: 6px
+  margin: 0 50px
+  font-size: 38px
+  width: 2em
+
+
+// these next items with initial caps are not used in the DOM
+// instead we look them up directly via. JavaScript
+// and use them in three.js
+// colors must be in #<hex> format, no color names
+// we could probably drop all the "."s, i kinda like that idea
+.Scene
+  //background-color: $jibo-verylightgray
+  //background-color: #471A97
+  background-color: #694538
+.SquareLight
+  color: #FEDCBA
+.SquareDark
+  color: #123456
+.ArrowLight
+  color: #FEDCBA
+.ArrowLightSide
+  color: #DEBC9A
+.ArrowDark
+  color: #123456
+.ArrowDarkSide
+  color: #021446
+.Piece
+  color: $jibo-redborder
+
+.tabletop canvas
+  display: block
+  margin: auto
+  padding: 0
+  border: none
 
 .startup-container 
   position: absolute
