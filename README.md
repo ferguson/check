@@ -68,7 +68,7 @@ directly in the package itself. No need to have node preinstalled.
 Clone a copy of Check:
 
     $ cd ~
-    $ git clone https://github.com/ferguson/check.git
+    $ git clone git@github.com:ferguson/check.git
 
 Run the setup script:
 
@@ -92,7 +92,7 @@ This should launch a browser window on your machine pointing to the
 webserver. If the browser window fails to open automatically, just
 open a browser page and point it at http://localhost:8000/.
 
-Hopefully the UI is self explanitory (assuming you have read The
+Hopefully the UI is self explanatory (assuming you have read The
 Challenge above).
 
 Press Contrl-C to quit the webserver.
@@ -100,7 +100,7 @@ Press Contrl-C to quit the webserver.
 Uninstalling
 ============
 
-Just delete the directory that Check was cloned in to. Everything it
+Just delete the directory that Check was cloned into. Everything it
 depends upon, including it's local node installation, is contained in
 that directory.
 
@@ -108,7 +108,7 @@ Notes
 =====
 
 You can see my abandoned first visualization by appending #2d to the
-end of the URL: http://localhost:8000/#2d
+end of the URL: <http://localhost:8000/#2d>.
 
 You might need to edit the URL twice to get it to load (that's the
 special nature of # parameters in URLs).
