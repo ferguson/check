@@ -1,11 +1,11 @@
+##
+## BoardLogic - the playing grid, with squares marked with the direction to move
+##
+
 ### jshint eqnull: true, eqeqeq: false ###
 
 require 'buffer'
 
-
-##
-## BoardLogic - the playing grid, with squares marked with the direction to move
-##
 
 BoardLogic = class
 

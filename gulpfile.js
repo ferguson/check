@@ -232,6 +232,7 @@ gulp.task('debug', function() {
 gulp.task('webserver', [], function() {
     return gulp.src('./')
         .pipe(webserver({
+            //host: '0.0.0.0',  // for mobile testing :)
             directoryListing: false,  // disabled to force it to serve index.html by default
             livereload: {
                 enable: true,  // enables livereload 

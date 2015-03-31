@@ -3,11 +3,11 @@
 BoardLogic = require './BoardLogic'
 PieceLogic = require './PieceLogic'
 
-board = new BoardLogic(8)
+board = new BoardLogic(64)
 
 while true
   piece = new PieceLogic(board)
-  piece.placeOnBoard(4, 4)
+  piece.placeRandomlyOnBoard()
   board.randomize()
   console.log '' + piece
   while piece.executeMove()

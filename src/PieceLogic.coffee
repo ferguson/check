@@ -1,8 +1,9 @@
-### jshint eqnull: true, eqeqeq: false, -W030 ###
-
 ##
 ## PieceLogic - the lone checker, to be placed on a BoardLogic and manipulated by a Player
 ##
+
+### jshint eqnull: true, eqeqeq: false, -W030 ###
+
 
 PieceLogic = class
   constructor: (@board) ->

@@ -1,24 +1,14 @@
-### jshint eqnull: true, eqeqeq: false, -W030 ###
-
 ##
 ## basic 2d visualization using a React and a <table>
 ##
+
+### jshint eqnull: true, eqeqeq: false, -W030 ###
 
 React = require 'react'
 
 BoardLogic = require './BoardLogic'
 PieceLogic = require './PieceLogic'
 
-main = ->
-  size = 8
-  board = new BoardLogic( Math.pow(size, 2) ).randomize()
-  piece = new PieceLogic(board)
-  piece.placeOnBoard(4, 4)
-  React.render `<Game size={size} board={board} piece={piece} />`, document.body
-
-module.exports = main
-
-##################################################
 
 BoardSurface = React.createClass
   render: ->
@@ -90,4 +80,13 @@ Game = React.createClass
     </div>`
 
     # <button onClick={this.reduceIt} disabled={this.state.size < 2}>-</button>
+
+main = ->
+  size = 8
+  board = new BoardLogic( Math.pow(size, 2) ).randomize()
+  piece = new PieceLogic(board)
+  piece.placeOnBoard(4, 4)
+  React.render `<Game size={size} board={board} piece={piece} />`, document.body
+
+module.exports = main
 

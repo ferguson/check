@@ -1,3 +1,5 @@
+### jshint eqnull: true, eqeqeq: false, -W030 ###
+
 BoardLogic = require './BoardLogic'
 
 board = new BoardLogic(64)

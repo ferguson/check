@@ -12,7 +12,8 @@ x show number of moves
 v show when looping
 x tell last valid move? or show on square?
 window resizing doesn't work
-add some sweet, sweet sound effects
+v add some sweet, sweet sound effects
+need overlapping sounds, use AudioAPI or buzz.js
 compress the audio files
 animations would be nice
 v increase camera angle at higher board sizes (or decrease it less actually)
@@ -28,16 +29,17 @@ v disable select in sass file
 x things are a little funky with the 'move' button and looping and play/loop and undo
 
 it would be nice if you could place the checker
-too much logic and state in <Game />, an event driven model could fix this
-stylesheet is a bleedin' mess, not really using the power of sass yet
-not mobile first
+too much logic and state in <Game />, an event driven system could fix this
+stylesheet is a bloody mess, not really using the power of sass yet
+expand on the tests, use something like mocha
+it's not mobile first, or even second
 
 
 livereload has a issue with reloading the current build, it lags one behind
-  - probably related to the extra coffescript & jsx compile cycles
-  - the 'watch' mechanism is a bit crude (it's part of the web server, it
-    should know which file changes are important for reloading and which to ignore)
-  - this is probably fixable with more exacting livereload watch configuration
+ - probably related to the extra coffescript & jsx compile cycles
+ - the 'watch' mechanism is a bit crude (it's part of the web server, it
+   should know which file changes are important for reloading and which to ignore)
+ - this is probably fixable with more exacting livereload watch configuration
 sourcemaps breaking jsx pipeline. break into more steps with more intermediate files?
 are sourcemaps working? check this
 and check sourcemaps through all the stages (coffeescript, jsx, browserfy, minify)
@@ -45,11 +47,12 @@ sourcemaps for sass
 better error capturing in gulpfile so gulp watch doesn't exit
 add 'watch' back as a dep for 'webserver' (or at least 'default'?)
 watchify keeps bundlejs from completing (maybe this is expected)
-make sure dependant gulpfile actions report back compleation correctly
+make sure dependant gulpfile actions report back completion correctly
 missing favicon, icon, and iphone splash screen images
-i think the bundle gulp tasks might be missing some dependencies
+v i think the bundle gulp tasks might be missing some dependencies
 sourcemaps for css bundle and css minify?
 ouroboros.css is not ready to be linted (gulpfile.js configured to skip it specifically)
+should download and use the original ouroboros sass file
 css file bundling has no control over ordering
 i wonder if the bad habit of using // to comment out things in css files breaks things when minifying (see ouroboros.css)
 2d version layout is lame

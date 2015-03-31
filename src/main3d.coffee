@@ -333,15 +333,13 @@ Game = React.createClass
       @setState autoMoveTimeout: null
 
   randomizeIt: ->
-    console.log 'randomizeIt'
     @newGame @state.size
+    @playSound 'resetSound'
 
   changeSize: (e) ->
-    console.log 'changeSize', e
     new_size = parseInt e.target.value
     @setState sizeInput: new_size
     if new_size > 1 and new_size <= 40
-      console.log 'new_size', new_size
       @newGame new_size
 
   expandIt: ->
@@ -350,11 +348,21 @@ Game = React.createClass
   reduceIt: ->
     @newGame @state.size - 1
 
+  playSound: (name) ->
+    for sound in ['nextSound', 'undoSound', 'doneSound', 'resetSound']
+      audio = @refs[sound].getDOMNode()
+      audio.pause()
+      audio.currentTime = 0.0
+    audio = @refs[name].getDOMNode()
+    audio.play()
+
   moveNext: ->
-    console.log 'moveNext'
     if @state.piece.stillOnBoard()
-      @refs.nextSound.getDOMNode().play()
       @state.piece.executeMove()
+      if @state.piece.stillOnBoard()
+        @playSound 'nextSound'
+      else
+        @playSound 'doneSound'
       @setState moves: @state.moves + 1
 
   toggleAutoMove: ->
@@ -365,7 +373,6 @@ Game = React.createClass
     return @
 
   autoMove: ->
-    console.log 'autoMove:', @
     if not @state.piece.stillOnBoard()  # pressing 'winner!' resets
       @randomizeIt()
     else
@@ -382,8 +389,8 @@ Game = React.createClass
     return @
 
   undoMove: ->
-    console.log 'undoMove'
     @state.piece.undoMove()
+    @playSound 'undoSound'
 
   render: ->
     playStopLabel = 'play'
@@ -407,7 +414,10 @@ Game = React.createClass
           <button onClick={this.moveNext} disabled={!this.state.piece.stillOnBoard()}><span>move</span></button>
         </div>
       </div>
-      <audio ref='nextSound' src='static/sounds/First_Contact.wav' type='audio/wav' preload />
+      <audio ref='undoSound' src='static/sounds/Springy_Synth.wav' type='audio/wav' preload />
+      <audio ref='nextSound' src='static/sounds/Let_Down_Synth.wav' type='audio/wav' preload />
+      <audio ref='doneSound' src='static/sounds/Zoiks.wav' type='audio/wav' preload />
+      <audio ref='resetSound' src='static/sounds/I_Did_It.wav' type='audio/wav' preload />
     </div>`
 
 
